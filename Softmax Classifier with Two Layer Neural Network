@@ -1,0 +1,129 @@
+def fc_forward(X, W, b):
+    """
+    Computes the forward pass for a fully-connected layer.
+    
+    The input X has shape (N, Din) and contains a minibatch of N
+    examples, where each example x[i] has shape (Din,).
+    
+    Inputs:
+    - X: A numpy array containing input data, of shape (N, Din)
+    - W: A numpy array of weights, of shape (Din, Dout)
+    - b: A numpy array of biases, of shape (Dout,)
+    
+    Returns a tuple of:
+    - out: output, of shape (N, Dout)
+    - cache: (X, W, b)
+    """
+   
+    out = np.matmul(X,W) + np.transpose(b)
+
+    cache = (X, W, b)
+    return out, cache
+
+
+def fc_backward(dout, cache):
+    """
+    Computes the backward pass for a fully_connected layer.
+    
+    Inputs:
+    - dout: Upstream derivative, of shape (N, Dout)
+    - cache: returned by your forward function. Tuple of:
+      - X: Input data, of shape (N, Din)
+      - W: Weights, of shape (Din, Dout)
+      - b: Biases, of shape (Dout,)
+      
+    Returns a tuple of:
+    - dX: Gradient with respect to X, of shape (N, Din)
+    - dW: Gradient with respect to W, of shape (Din, Dout)
+    - db: Gradient with respect to b, of shape (Dout,)
+    """
+    X, W, b = cache
+    dX, dW, db = None, None, None
+   
+    #grad_l = 1
+    dX = np.matmul(dout, np.transpose(W))
+    dW = np.matmul(np.transpose(X), dout)
+    db = np.sum(np.transpose(dout), axis=1)
+
+    return dX, dW, db
+
+def relu_forward(x):
+    """
+    Computes the forward pass for a layer of rectified linear units (ReLUs).
+
+    Input:
+    - x: Inputs, of any shape
+
+    Returns a tuple of:
+    - out: Output, of the same shape as x
+    - cache: x
+    """
+    
+    #print("shape of out1", out1.shape)
+    ###########################################################################
+                             #
+    ###########################################################################
+    out1 = np.maximum(0.0,x)
+    #print("shape of out1 after relu within relu", out1.shape)
+    ###########################################################################
+    #                                                #
+    ###########################################################################
+    cache = x
+    return out1, cache
+
+
+def relu_backward(dout, cache):
+    """
+    Computes the backward pass for a layer of rectified linear units (ReLUs).
+
+    Input:
+    - dout: Upstream derivatives, of any shape
+    - cache: returned by your forward function. Input x, of same shape as dout
+
+    Returns:
+    - dx: Gradient with respect to x
+    """
+    dx, x = dout, cache
+    ##print("shape of cache in relu backward", np.array(cache).shape)
+    ###########################################################################
+    # the ReLU backward pass.                                 #
+    ###########################################################################
+    #x = np.array([x])
+    #print("shape of x in relu backward",x.shape)
+    for i in range(x.shape[0]):
+      for j in range(x.shape[1]):
+        if x[i,j] > 0: x[i,j] = 1
+        else: x[i,j] = 0
+        
+    dx = np.multiply(dout, x)
+  
+        
+
+    ###########################################################################
+    #                                                      #
+    ###########################################################################
+    return dx
+
+
+def softmax_loss(X, y):
+    """
+    Computes the loss and gradient for softmax classification.
+
+    Inputs:
+    - X: Input data, of shape (N, C) where x[i, j] is the score for the jth
+      class for the ith input.
+    - y: Vector of labels, of shape (N,) where y[i] is the label for X[i] and
+      0 <= y[i] < C
+
+    Returns a tuple of:
+    - loss: Scalar giving the loss
+    - dX: Gradient of the loss with respect to x
+    """
+    loss, dX = None, None                                         
+    dX = np.exp(X - np.max(X, axis=1, keepdims=True))
+    dX /= np.sum(dX, axis=1, keepdims=True)
+    loss = -np.sum(np.log(dX[np.arange(X.shape[0]), y])) / X.shape[0]
+    dX[np.arange(X.shape[0]), y] -= 1
+    dX /= X.shape[0]
+
+    return loss, dX
