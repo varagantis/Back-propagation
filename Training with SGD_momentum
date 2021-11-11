@@ -1,0 +1,40 @@
+def SGD_Momentum(W, dW, velocity, beta=0.5, learning_rate=0.05):
+    """ Apply a gradient descent with momentum update on weight W
+    Inputs:
+        W : Weight matrix
+        dW : gradient of weight, same shape as W
+        velocity : velocity matrix, same shape as W
+        beta : scalar value in range [0,1] weighting the velocity matrix. Setting it to 0 should make SGD_Momentum same as SGD. 
+               Defaults to 0.5.
+        learning_rate : Learning rate. Defaults to 1e-3.
+    Returns:
+        new_W: Updated weight matrix
+        new_velocity: Updated velocity matrix
+    """
+   
+    # TODO:
+    # Apply a gradient descent step on weight W using the gradient dW and the specified learning rate.
+    # 1. Calculate the new velocity by using the velocity of last iteration (input velocity) and gradient
+    # 2. Update the weights using the new_velocity
+    new_velocity = dW + beta*velocity
+    new_W = W - learning_rate*new_velocity
+    # ==== end of code ====
+    return new_W, new_velocity
+
+#######################################################################
+# Set up model hyperparameters for SGD_Momentum   
+#  hyperparameters should be identical to what you used for SGD (without momentum)#
+#######################################################################
+
+# initialize model
+model_SGD_Momentum = SoftmaxClassifier(hidden_dim = 300, weight_scale=1e-2)
+
+# start training 
+#Using SGD_Momentum as optimizer for trainning for training
+model_SGD_Momentum, train_acc_history_SGD_Momentum, val_acc_history_SGD_Momentum = trainNetwork(
+    model_SGD_Momentum, train_data, learning_rate = 0.05,
+    lr_decay=0.08, num_epochs=10, 
+    batch_size=100, print_every=1000, optimizer = 'SGD_Momentum')
+#######################################################################
+#                                        #
+#######################################################################
